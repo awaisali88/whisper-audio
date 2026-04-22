@@ -86,7 +86,9 @@ The folder is named from the video title (spaces replaced with `_`, Windows-forb
 - `audio.m4a` — downloaded source audio
 - `transcript.txt` — plain-text transcript
 - `transcript.srt` — timestamped subtitles
-- `analysis.md` — Summary, Key Points, Topics, Notable Quotes
+- `analysis.md` — only written when you pass `--analyze`
+
+Analysis is off by default. Add `--analyze` to run Ollama on the transcript and produce a Summary / Key Points / Topics / Notable Quotes Markdown file.
 
 ### Flags
 
@@ -97,7 +99,7 @@ The folder is named from the video title (spaces replaced with `_`, Windows-forb
 | `--device` | `cuda` | `cuda`, `cpu`, or `auto` |
 | `--compute-type` | `float16` | e.g. `float16`, `int8_float16`, `int8` |
 | `--ollama-model` | `qwen3.5:latest` | Any model you have pulled in Ollama |
-| `--skip-analysis` | off | Stop after writing the transcript |
+| `--analyze` | off | Run Ollama analysis on the transcript (opt-in) |
 | `--output-dir` | `output` | Root folder for per-video output |
 
 ### Examples
@@ -107,14 +109,14 @@ CPU-only, smaller model:
 python main.py "https://youtu.be/x7X9w_GIm1s" --device cpu --compute-type int8 --model medium
 ```
 
-Transcript only (no Ollama needed):
+Transcript plus Ollama analysis:
 ```
-python main.py "https://youtu.be/x7X9w_GIm1s" --skip-analysis
+python main.py "https://youtu.be/x7X9w_GIm1s" --analyze
 ```
 
 Different analysis model:
 ```
-python main.py "https://youtu.be/x7X9w_GIm1s" --ollama-model llama3.1:8b
+python main.py "https://youtu.be/x7X9w_GIm1s" --analyze --ollama-model llama3.1:8b
 ```
 
 Re-transcribe an already-downloaded audio file (skips YouTube entirely):

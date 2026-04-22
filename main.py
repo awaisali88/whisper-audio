@@ -43,7 +43,11 @@ def main() -> int:
         "--ollama-model",
         default=os.environ.get("OLLAMA_MODEL") or "qwen3.5:latest",
     )
-    parser.add_argument("--skip-analysis", action="store_true")
+    parser.add_argument(
+        "--analyze",
+        action="store_true",
+        help="Run Ollama analysis on the transcript after transcription. Off by default.",
+    )
     parser.add_argument(
         "--output-dir",
         default=os.environ.get("OUTPUT_DIR") or "output",
@@ -101,8 +105,7 @@ def main() -> int:
     print(f"  transcript: {txt_path}")
     print(f"  subtitles:  {srt_path}")
 
-    if args.skip_analysis:
-        print("Skipping analysis (--skip-analysis).")
+    if not args.analyze:
         return 0
 
     print(f"Analyzing with Ollama model '{args.ollama_model}' ...")
@@ -112,7 +115,7 @@ def main() -> int:
         print(f"ERROR: analysis failed: {e}", file=sys.stderr)
         print(
             "Hint: ensure Ollama is running ('ollama serve') and the model is pulled "
-            f"('ollama pull {args.ollama_model}'), or re-run with --skip-analysis.",
+            f"('ollama pull {args.ollama_model}').",
             file=sys.stderr,
         )
         return 1

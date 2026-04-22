@@ -14,7 +14,16 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Download a YouTube video, transcribe it locally with Whisper, and analyze it."
     )
-    parser.add_argument("url", help="YouTube video URL")
+    parser.add_argument(
+        "url",
+        nargs="?",
+        help="YouTube video URL. Omit when using --audio.",
+    )
+    parser.add_argument(
+        "--audio",
+        help="Path to an existing audio file. Skips download and re-transcribes that file. "
+        "Transcript and analysis are written next to the audio.",
+    )
     parser.add_argument(
         "--model",
         default=os.environ.get("WHISPER_MODEL") or "large-v3",
@@ -43,15 +52,26 @@ def main() -> int:
 
     output_root = Path(args.output_dir)
 
-    print(f"Downloading audio from {args.url} ...")
-    try:
-        audio_path, slug, title = download_audio(args.url, output_root)
-    except Exception as e:
-        print(f"ERROR: download failed: {e}", file=sys.stderr)
-        return 1
-    video_dir = audio_path.parent
-    print(f"Downloaded: {title}")
-    print(f"  audio: {audio_path}")
+    if args.audio:
+        audio_path = Path(args.audio)
+        if not audio_path.is_file():
+            print(f"ERROR: --audio path not found: {audio_path}", file=sys.stderr)
+            return 1
+        video_dir = audio_path.parent
+        title = video_dir.name
+        print(f"Re-transcribing local audio: {audio_path}")
+    elif args.url:
+        print(f"Downloading audio from {args.url} ...")
+        try:
+            audio_path, slug, title = download_audio(args.url, output_root)
+        except Exception as e:
+            print(f"ERROR: download failed: {e}", file=sys.stderr)
+            return 1
+        video_dir = audio_path.parent
+        print(f"Downloaded: {title}")
+        print(f"  audio: {audio_path}")
+    else:
+        parser.error("provide a YouTube URL or --audio <path>")
 
     device = args.device
     compute_type = args.compute_type

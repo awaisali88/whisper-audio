@@ -82,7 +82,7 @@ The Whisper `large-v3` weights (~3 GB) download automatically on first run and a
 python main.py "https://www.youtube.com/watch?v=VIDEO_ID"
 ```
 
-Output lands in `output/VIDEO_ID/`:
+The folder is named from the video title (spaces replaced with `_`, Windows-forbidden characters stripped). Output lands in `output/<Video_Title>/`:
 - `audio.m4a` — downloaded source audio
 - `transcript.txt` — plain-text transcript
 - `transcript.srt` — timestamped subtitles
@@ -92,6 +92,7 @@ Output lands in `output/VIDEO_ID/`:
 
 | Flag | Default | Purpose |
 |------|---------|---------|
+| `--audio <path>` | – | Re-transcribe an existing local audio file; skips download. Writes transcript + analysis next to the audio. |
 | `--model` | `large-v3` | Whisper model size |
 | `--device` | `cuda` | `cuda`, `cpu`, or `auto` |
 | `--compute-type` | `float16` | e.g. `float16`, `int8_float16`, `int8` |
@@ -115,3 +116,9 @@ Different analysis model:
 ```
 python main.py "https://youtu.be/x7X9w_GIm1s" --ollama-model llama3.1:8b
 ```
+
+Re-transcribe an already-downloaded audio file (skips YouTube entirely):
+```
+python main.py --audio output/VE7IaVrsH0s/audio.m4a
+```
+Transcript and analysis are written next to the audio, overwriting any stale ones.
